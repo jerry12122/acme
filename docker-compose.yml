@@ -10,5 +10,5 @@ services:
     env_file:
       - .env
     volumes:
-      - /volumes/acmecf:/acme
+      - /path/to/cert:/acme
     network_mode: host
