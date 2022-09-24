@@ -5,8 +5,9 @@ acme.sh --set-default-ca --server letsencrypt
 crontab -l > mycron
 for i in $(echo $DOMAIN | tr ";" "\n")
 do
-    echo "0 0 * * * acme.sh  --home /acme --server letsencrypt --issue  --dns dns_cf  $DOMAIN --force > /log/acme.log" >> mycron
+    echo "0 0 * * * acme.sh  --home /acme --server letsencrypt --issue  --dns dns_cf  $i --force >> /log/acme.log" >> mycron
 done
+crontab -r
 crontab mycron
 rm mycron
 mkdir -p /log
