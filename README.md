@@ -21,14 +21,12 @@ cp env.sample .env
 
 - ACME_EMAIL: 跟域名機構申請域名使用的 email，Let’s Encrypt 可以自行填寫
 - CF_Token: [Clouflare 申請 API Token](https://dash.cloudflare.com/profile/api-tokens)
-- CF_Zone_ID: 在 Cloudflare 域名概觀頁面取得
 - CF_Account_ID: 在 Cloudflare 域名概觀頁面取得
 - DOMAIN: 把要申請的域名填寫在這，格式 `-d *.example.com -d example.com`
 
 ```env
 ACME_EMAIL=aaa@example.com
 CF_Token=xxxxxxxxxxxxxxxxxxxxxxx
-CF_Zone_ID=xxxxxxxxxxxxxxxxxxxxxx
 CF_Account_ID=xxxxxxxxxxxxxxxxxxxxxx
 DOMAIN=-d *.example.com -d example.com
 ```
@@ -54,6 +52,7 @@ tail -f /log/acme.log
 ## 編輯 docker-compose.yml
 
 將 `/path/to/cert` 改成存放頻證的路徑
+
 ```yml
 version: "3.9"
   services:
