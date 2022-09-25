@@ -54,6 +54,22 @@ tail -f /log/acme.log
 ## 編輯 docker-compose.yml
 
 將 `/path/to/cert` 改成存放頻證的路徑
+```yml
+version: "3.9"
+  services:
+    acmecf:
+      build: .
+      image: acmecf
+      tty: true
+      stdin_open: true
+      container_name: acmecf
+      restart: always
+      env_file:
+       - .env
+      volumes:
+       - /path/to/cert:/acme
+      network_mode: host
+```
 
 ## 編譯及啟動容器
 
