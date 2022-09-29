@@ -22,7 +22,7 @@ cp env.sample .env
 - ACME_EMAIL: 跟域名機構申請域名使用的 email，Let’s Encrypt 可以自行填寫
 - CF_Token: [Clouflare 申請 API Token](https://dash.cloudflare.com/profile/api-tokens)
 - CF_Account_ID: 在 Cloudflare 域名概觀頁面取得
-- DOMAIN: 把要申請的域名填寫在這，格式 `-d *.example.com -d example.com`
+- DOMAIN: 把要申請的域名填寫在這，格式 `-d *.example.com -d example.com`，如果要分成不同的憑證使用`;`分隔
 
 ```env
 ACME_EMAIL=aaa@example.com
@@ -40,8 +40,14 @@ DOMAIN=-d *.example.com -d example.com
 curl -sSL https://get.acme.sh | sh -s email=$ACME_EMAIL
 ln -s /root/.acme.sh/acme.sh /usr/bin/acme.sh
 acme.sh --set-default-ca --server letsencrypt
+crontab -r
 crontab -l > mycron
-echo "0 0 * * * acme.sh  --home /acme --server letsencrypt --issue  --dns dns_cf  $DOMAIN --force >> /log/acme.log" >> mycron
+IFS=';'
+read -ra arr <<< "$DOMAIN"
+for val in "${arr[@]}";
+do
+  echo "0 0 * * * acme.sh  --home /acme --server letsencrypt --issue  --dns dns_cf  $val --force >> /log/acme.log" >> mycron
+done
 crontab mycron
 rm mycron
 mkdir -p /log
