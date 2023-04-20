@@ -40,11 +40,24 @@ jobs:
       - name: Push the Docker image to GitHub Packages
         run: docker push ghcr.io/${{ github.repository }}:latest
         
-      - name: Delete Package Versions Keep Latest
-        uses: smartsquaregmbh/delete-old-packages@v0.7.0
-        with:
-          type: docker
-          keep: 2
-          names: |
-            ghcr.io/${{ github.repository }}
 
+  delete_old_versions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Get package versions
+        run: |
+          versions=$(ghcr.io/v2/${{ github.repository }}/packages/YOUR_PACKAGE_NAME/versions | jq '.[] | select(.metadata.tags[0] != null) | .metadata.tags[0].name' | sort -r)
+          echo "::set-output name=versions::$versions"
+        id: get_versions
+      - name: Delete old versions
+        run: |
+          for version in ${{ steps.get_versions.outputs.versions }}; do
+            if [ $(echo "$version" | awk -F. '{ print $1 }') -le 5 ]; then
+              echo "Keeping version $version"
+            else
+              echo "Deleting version $version"
+              ghcr.io/v2/${{ github.repository }}/YOUR_PACKAGE_NAME:$version | jq '.id' | xargs ghcr.io/v2/${{ github.repository }}/packages/YOUR_PACKAGE_NAME/versions | xargs ghcr.io/v2/${{ github.repository }}/packages/YOUR_PACKAGE_NAME/versions
+            fi
+          done
