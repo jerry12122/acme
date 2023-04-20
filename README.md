@@ -1,8 +1,10 @@
-# 使用 acme.sh 與 Cloudflare 設定 Let’s Encrypt SSL 憑證自動續期
+# 使用 acme.sh 加上 Docker 獲得 ZeroSSL 免費憑證
 
 ## 簡介
 
-acme.sh 是一個在 Linux 上常用的 acme 客戶端，而 Let’s Encrypt 是免費、自動化和開放的憑證頒發機構，Cloudflare 是域名託管的平台，本教成是由三者結合搭配 Docker 來建立自動化憑證續期系統。
+通過[acme.sh](https://github.com/acmesh-official/acme.sh)工具，加上 DNS API 與免費憑證簽發機構 ZeroSSL，包裝成 Docker 容器排程執行，實現自動更新的 SSL 憑證的服務。
+
+## 教程
 
 ## 從 Github 把專案拉下來
 
@@ -19,40 +21,23 @@ cp env.sample .env
 
 ## 編輯.env
 
-- ACME_EMAIL: 跟域名機構申請域名使用的 email，Let’s Encrypt 可以自行填寫
+- ACME_EMAIL: 跟域名機構申請域名使用的 email
 - CF_Token: [Clouflare 申請 API Token](https://dash.cloudflare.com/profile/api-tokens)
 - CF_Account_ID: 在 Cloudflare 域名概觀頁面取得
-- DOMAIN: 把要申請的域名填寫在這，格式 `-d *.example.com -d example.com`，如果要分成不同的憑證使用`;`分隔
+- TELEGRAM_BOT_APITOKEN: Telegram 通知 Bot 的 Token
+- TELEGRAM_BOT_CHATID: Telegram 通知用戶的 Chat ID
 
-```env
-ACME_EMAIL=aaa@example.com
-CF_Token=xxxxxxxxxxxxxxxxxxxxxxx
-CF_Account_ID=xxxxxxxxxxxxxxxxxxxxxx
-DOMAIN=-d *.example.com -d example.com
 ```
-
-## 編輯 entry.sh
-
-將 `0 0 * * *` 改為自己想執行的時間，參考[crontab 格式](https://crontab.guru/)
-
-```bash
-#!/bin/bash
-curl -sSL https://get.acme.sh | sh -s email=$ACME_EMAIL
-ln -s /root/.acme.sh/acme.sh /usr/bin/acme.sh
-acme.sh --set-default-ca --server letsencrypt
-crontab -r
-crontab -l > mycron
-IFS=';'
-read -ra arr <<< "$DOMAIN"
-for val in "${arr[@]}";
-do
-  echo "0 0 * * * acme.sh  --home /acme --server letsencrypt --issue  --dns dns_cf  $val --force >> /log/acme.log" >> mycron
-done
-crontab mycron
-rm mycron
-mkdir -p /log
-touch /log/acme.log
-tail -f /log/acme.log
+# 必要
+ACME_EMAIL=email@example.com
+# dns_api參數
+CF_Token=1111111111111111111111111111
+CF_Account_ID=1111111111111111111111111111
+DPI_Id=123
+DPI_Key=1111111111111111111111111111
+# 更新Telegram Bot通知
+TELEGRAM_BOT_APITOKEN="1111111:aaaaaaaaaaaaaaaaaaaaaaa"
+TELEGRAM_BOT_CHATID="1111111"
 ```
 
 ## 編輯 docker-compose.yml
@@ -61,19 +46,20 @@ tail -f /log/acme.log
 
 ```yml
 version: "3.9"
-  services:
-    acmecf:
-      build: .
-      image: acmecf
-      tty: true
-      stdin_open: true
-      container_name: acmecf
-      restart: always
-      env_file:
-       - .env
-      volumes:
-       - /path/to/cert:/acme
-      network_mode: host
+services:
+  acme-sh:
+    build: .
+    image: acme-sh
+    tty: true
+    stdin_open: true
+    container_name: acme-sh
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - /path/to/cert:/cert
+      - /path/to/config:/root/.acme.sh
+    network_mode: host
 ```
 
 ## 編譯及啟動容器
@@ -81,3 +67,32 @@ version: "3.9"
 ```bash
 docker-compose up -d --build
 ```
+
+## 新增要安裝的憑證
+
+用法: `docker exec -it acme-sh ./init.sh 憑證存放位置 dns_api 域名1 域名2...`  
+例如: 使用 Cloudflare 託管的域名 `example.com` ，憑證存放在`example.com`目錄下
+
+1. 執行下面指令
+
+```bash
+docker exec -it acme-sh ./init.sh /cert/example.com dns_cf example.com
+```
+
+2. 就會印出下面兩行指令
+
+```bash
+/usr/bin/acme.sh --server zerossl --register-account -m email@example.com --issue --force --log --dns dns_cf -d example.com
+
+/usr/bin/acme.sh --install-cert --key-file /cert/example.com/cert.key --fullchain-file /cert/example.com/cert.pem --log -d example.com
+```
+
+3. 將其前方加入`docker exec -it acme-sh `，改為下方指令並執行
+
+```bash
+docker exec -it acme-sh /usr/bin/acme.sh --server zerossl --register-account -m email@example.com --issue --force --log --dns dns_cf -d example.com
+
+docker exec -it acme-sh /usr/bin/acme.sh --install-cert --key-file /cert/example.com/cert.key --fullchain-file /cert/example.com/cert.pem --log -d example.com
+```
+
+4. 完成
