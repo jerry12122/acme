@@ -37,4 +37,6 @@ jobs:
           tags: ghcr.io/${{ github.repository }}:${{ env.version }}
 
       - name: Add latest tag
-        run: docker push ghcr.io/${{ github.repository }}:latest
+        run: |
+          docker tag ghcr.io/${{ github.repository }}:latest
+          docker push ghcr.io/${{ github.repository }}:latest
