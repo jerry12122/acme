@@ -41,7 +41,10 @@ jobs:
         run: docker push ghcr.io/${{ github.repository }}:latest
         
       - name: Delete Package Versions Keep Latest
-        uses: windyakin/delete-package-versions-keep-latest@1.0.2
+        uses: smartsquaregmbh/delete-old-packages@v0.7.0
         with:
-          package-name: ghcr.io/${{ github.repository }}
-          keep-latest-package-versions: 2
+          type: docker
+          keep: 2
+          names: |
+            ghcr.io/${{ github.repository }}
+
