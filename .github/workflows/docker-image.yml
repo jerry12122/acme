@@ -41,26 +41,4 @@ jobs:
         run: docker push ghcr.io/${{ github.repository }}:latest
         
 
-  delete_old_versions:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Get package versions
-        run: |
-          versions=$(ghcr.io/v2/${{ github.repository }}/packages/acme/versions | jq '.[] | select(.metadata.tags[0] != null) | .metadata.tags[0].name' | sort -r)
-          echo "::set-output name=versions::$versions"
-        id: get_versions
-      - name: Delete old versions
-        run: |
-          for version in ${{ steps.get_versions.outputs.versions }}; do
-            if [ $(echo "$version" | awk -F. '{ print $1 }') -le 5 ]; then
-              echo "Keeping version $version"
-            else
-              echo "Deleting version $version"
-              ghcr.io/v2/${{ github.repository }}/acme:$version | jq '.id' | xargs ghcr.io/v2/${{ github.repository }}/packages/acme/versions | xargs ghcr.io/v2/${{ github.repository }}/packages/acme/versions
-            fi
-          done
+
