@@ -13,8 +13,8 @@ RUN apk add --no-cache tzdata && \
 WORKDIR /app
 
 # 复制文件并设置文件权限
-COPY ./*.sh ./
-RUN chmod +x ./*.sh
+COPY ./*.sh /app/
+RUN chmod +x /app/*.sh
 
 # 添加Cron任务
 ENV CRON_COMMAND="0 0 * * * /usr/bin/acme.sh --cron"
