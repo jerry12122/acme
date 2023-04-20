@@ -7,7 +7,7 @@ RUN TZ=Asia/Taipei \
 && echo $TZ > /etc/timezone \
 && dpkg-reconfigure -f noninteractive tzdata 
 WORKDIR /app
-COPY ./*.sh .
+COPY ./*.sh ./
 RUN chmod +x ./*.sh
 RUN service cron start && \
 echo "0 0 * * *" "/usr/bin/acme.sh --cron" >> mycron && \
