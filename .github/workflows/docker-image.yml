@@ -48,7 +48,7 @@ jobs:
         uses: actions/checkout@v2
       - name: Get package versions
         run: |
-          versions=$(ghcr.io/v2/${{ github.repository }}/packages/YOUR_PACKAGE_NAME/versions | jq '.[] | select(.metadata.tags[0] != null) | .metadata.tags[0].name' | sort -r)
+          versions=$(ghcr.io/v2/${{ github.repository }}/packages/acme/versions | jq '.[] | select(.metadata.tags[0] != null) | .metadata.tags[0].name' | sort -r)
           echo "::set-output name=versions::$versions"
         id: get_versions
       - name: Delete old versions
@@ -58,6 +58,6 @@ jobs:
               echo "Keeping version $version"
             else
               echo "Deleting version $version"
-              ghcr.io/v2/${{ github.repository }}/YOUR_PACKAGE_NAME:$version | jq '.id' | xargs ghcr.io/v2/${{ github.repository }}/packages/YOUR_PACKAGE_NAME/versions | xargs ghcr.io/v2/${{ github.repository }}/packages/YOUR_PACKAGE_NAME/versions
+              ghcr.io/v2/${{ github.repository }}/acme:$version | jq '.id' | xargs ghcr.io/v2/${{ github.repository }}/packages/acme/versions | xargs ghcr.io/v2/${{ github.repository }}/packages/acme/versions
             fi
           done
