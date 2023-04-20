@@ -16,11 +16,12 @@ WORKDIR /app
 COPY ./*.sh ./
 RUN chmod +x ./*.sh
 
-# 启动Cron并添加任务
-RUN crond -f -d 8 && \
-    echo "0 0 * * *" "/usr/bin/acme.sh --cron" >> mycron && \
-    crontab mycron && \
-    rm mycron
+# 添加Cron任务
+ENV CRON_COMMAND="0 0 * * * /usr/bin/acme.sh --cron"
+RUN echo "${CRON_COMMAND}" >> /etc/crontabs/root
+
+# 启动Cron守护进程
+CMD ["crond", "-f", "-d", "8"]
 
 # 设置入口点
 ENTRYPOINT ["/bin/sh", "-c", "/app/entry.sh"]
