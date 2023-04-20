@@ -11,12 +11,12 @@ then
   echo [$(date)]  acme.sh has been installed
   acme.sh --set-default-ca --server zerossl
 fi
-
-# install set notify
-acme.sh --set-notify --notify-level 3
-acme.sh --set-notify --notify-mode 0
-acme.sh --set-notify --notify-hook telegram
 service cron start
+# install set notify
+/usr/bin/acme.sh --set-notify --notify-level 3
+/usr/bin/acme.sh --set-notify --notify-mode 0
+/usr/bin/acme.sh --set-notify --notify-hook telegram
+
 # logging
 if [[ ! -f /root/.acme.sh/acme.sh.log ]]; then
   touch /root/.acme.sh/acme.sh.log

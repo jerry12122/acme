@@ -1,13 +1,14 @@
-FROM alpine:3.14
+FROM debian:buster-slim
 
+RUN ln -s /bin/bash /usr/bin/bash
 # 安装所需软件包
-RUN apk update && apk add --no-cache \
-    wget curl tar vim
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    wget curl tar vim openssl cron \
+    && rm -rf /var/lib/apt/lists/*
 
 # 设置时区
 ENV TZ=Asia/Taipei
-RUN apk add --no-cache tzdata && \
-    ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
     echo $TZ > /etc/timezone
 
 WORKDIR /app
@@ -17,11 +18,13 @@ COPY ./*.sh /app/
 RUN chmod +x /app/*.sh
 
 # 添加Cron任务
-ENV CRON_COMMAND="0 0 * * * /usr/bin/acme.sh --cron"
-RUN echo "${CRON_COMMAND}" >> /etc/crontabs/root
+RUN service cron start && \
+echo "0 0 * * *" "/usr/bin/acme.sh --cron" >> mycron && \
+crontab mycron && \
+rm mycron
 
 # 启动Cron守护进程
-CMD ["crond", "-f", "-d", "8"]
+CMD ["cron", "-f"]
 
 # 设置入口点
 ENTRYPOINT ["/bin/sh", "-c", "/app/entry.sh"]

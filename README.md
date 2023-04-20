@@ -26,6 +26,7 @@ cp env.sample .env
 - CF_Account_ID: 在 Cloudflare 域名概觀頁面取得
 - TELEGRAM_BOT_APITOKEN: Telegram 通知 Bot 的 Token
 - TELEGRAM_BOT_CHATID: Telegram 通知用戶的 Chat ID
+- HTTPS_INSECURE: ssl 報錯處理
 
 ```
 # 必要
@@ -38,6 +39,8 @@ DPI_Key=1111111111111111111111111111
 # 更新Telegram Bot通知
 TELEGRAM_BOT_APITOKEN="1111111:aaaaaaaaaaaaaaaaaaaaaaa"
 TELEGRAM_BOT_CHATID="1111111"
+# ACME出現報錯時新增 Please refer to https://curl.haxx.se/libcurl/c/libcurl-errors.html for error code: 60
+# HTTPS_INSECURE=1
 ```
 
 ## 編輯 docker-compose.yml
