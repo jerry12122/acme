@@ -75,6 +75,7 @@ case $option in
     /usr/bin/acme.sh --remove -d $domain_name
 
     if [ $? -eq 0 ]; then
+        rm -rf /root/.acme.sh/$domain_name
         echo "成功移除憑證 $domain_name "
     else
         echo "移除憑證 $domain_name 失敗"
