@@ -1,8 +1,7 @@
 version: "3.9"
 services:
   acme-sh:
-    build: .
-    image: acme-sh
+    image: ghcr.io/jerry12122/acme:latest
     tty: true
     stdin_open: true
     container_name: acme-sh
@@ -10,6 +9,6 @@ services:
     env_file:
       - .env
     volumes:
-      - /volumes/acme/cert:/cert
-      - /volumes/acme/home:/root/.acme.sh
+      - /path/to/cert:/cert
+      - /path/to/home:/root/.acme.sh
     network_mode: host
