@@ -31,14 +31,17 @@ cp env.sample .env
 ```
 # 必要
 ACME_EMAIL=email@example.com
+
 # dns_api參數
 CF_Token=1111111111111111111111111111
 CF_Account_ID=1111111111111111111111111111
 DPI_Id=123
 DPI_Key=1111111111111111111111111111
+
 # 更新Telegram Bot通知
 TELEGRAM_BOT_APITOKEN="1111111:aaaaaaaaaaaaaaaaaaaaaaa"
 TELEGRAM_BOT_CHATID="1111111"
+
 # ACME出現報錯時新增 Please refer to https://curl.haxx.se/libcurl/c/libcurl-errors.html for error code: 60
 # HTTPS_INSECURE=1
 ```
