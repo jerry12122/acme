@@ -63,7 +63,7 @@ services:
       - .env
     volumes:
       - /path/to/cert:/cert
-      - /path/to/config:/root/.acme.sh
+      - /path/to/home:/root/.acme.sh
     network_mode: host
 ```
 

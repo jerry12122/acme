@@ -16,7 +16,6 @@ WORKDIR /app
 # 复制文件并设置文件权限
 COPY ./*.sh /app/
 RUN chmod +x /app/*.sh && \
-echo insecure >> $HOME/.curlrc
 
 # 添加Cron任务
 RUN service cron start && \
