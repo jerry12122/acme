@@ -76,6 +76,7 @@ case $option in
 
     if [ $? -eq 0 ]; then
         rm -rf /root/.acme.sh/$domain_name
+        rm -rf /cert/$domain_name
         echo "成功移除憑證 $domain_name "
     else
         echo "移除憑證 $domain_name 失敗"
