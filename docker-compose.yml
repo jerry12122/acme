@@ -1,10 +1,10 @@
 version: "3.9"
 services:
-  acme-sh:
+  acme:
     image: ghcr.io/jerry12122/acme:latest
     tty: true
     stdin_open: true
-    container_name: acme-sh
+    container_name: acme
     restart: always
     env_file:
       - .env
