@@ -2,9 +2,9 @@ FROM ubuntu:latest
 
 # 安装所需软件包
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    wget curl tar vim openssl cron \
+    wget curl tar vim openssl cron ca-certificates \
     && rm -rf /var/lib/apt/lists/*
-
+ 
 # 设置时区
 ENV TZ=Asia/Taipei
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
