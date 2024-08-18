@@ -3,7 +3,7 @@
 # install acme.sh
 if  [[ ! -f /root/.acme.sh/acme.sh ]]
 then
-  curl -sSL https://get.acme.sh  | sh -s email=$ACME_EMAIL
+  curl -skSL https://get.acme.sh  | sh -s email=$ACME_EMAIL
 fi
 if  [[ ! -f /usr/bin/acme.sh ]]
 then
