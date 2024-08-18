@@ -1,6 +1,5 @@
-FROM debian:buster-slim
+FROM ubuntu:latest
 
-RUN ln -s /bin/bash /usr/bin/bash
 # 安装所需软件包
 RUN apt-get update && apt-get install -y --no-install-recommends \
     wget curl tar vim openssl cron \
